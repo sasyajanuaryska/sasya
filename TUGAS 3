@@ -1,0 +1,198 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+
+abstract class MenuItem {
+    private String nama;
+    private double harga;
+    private String kategori;
+
+    public MenuItem(String nama, double harga, String kategori) {
+        this.nama = nama;
+        this.harga = harga;
+        this.kategori = kategori;
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public double getHarga() {
+        return harga;
+    }
+
+    public String getKategori() {
+        return kategori;
+    }
+
+    public abstract void tampilMenu();
+}
+
+
+class Makanan extends MenuItem {
+    private String jenisMakanan;
+
+    public Makanan(String nama, double harga, String kategori, String jenisMakanan) {
+        super(nama, harga, kategori);
+        this.jenisMakanan = jenisMakanan;
+    }
+
+    @Override
+    public void tampilMenu() {
+        System.out.println("Makanan: " + getNama() + ", Harga: " + getHarga() + ", Kategori: " + getKategori() + ", Jenis: " + jenisMakanan);
+    }
+}
+
+
+class Minuman extends MenuItem {
+    private String jenisMinuman;
+
+    public Minuman(String nama, double harga, String kategori, String jenisMinuman) {
+        super(nama, harga, kategori);
+        this.jenisMinuman = jenisMinuman;
+    }
+
+    @Override
+    public void tampilMenu() {
+        System.out.println("Minuman: " + getNama() + ", Harga: " + getHarga() + ", Kategori: " + getKategori() + ", Jenis: " + jenisMinuman);
+    }
+}
+
+
+class Diskon extends MenuItem {
+    private double diskon;
+
+    public Diskon(String nama, double harga, String kategori, double diskon) {
+        super(nama, harga, kategori);
+        this.diskon = diskon;
+    }
+
+    @Override
+    public void tampilMenu() {
+        System.out.println("Diskon: " + getNama() + ", Harga: " + getHarga() + ", Kategori: " + getKategori() + ", Diskon: " + diskon + "%");
+    }
+}
+
+
+class Menu {
+    ArrayList<MenuItem> daftarMenu;
+
+    public Menu() {
+        daftarMenu = new ArrayList<>();
+    }
+
+    public void tambahItem(MenuItem item) {
+        daftarMenu.add(item);
+    }
+
+    public void tampilkanMenu() {
+        for (MenuItem item : daftarMenu) {
+            item.tampilMenu();
+        }
+    }
+}
+
+
+class Pesanan {
+    private ArrayList<MenuItem> daftarPesanan;
+
+    public Pesanan() {
+        daftarPesanan = new ArrayList<>();
+    }
+
+    public void tambahPesanan(MenuItem item) {
+        daftarPesanan.add(item);
+    }
+
+    public double hitungTotal() {
+        double total = 0;
+        for (MenuItem item : daftarPesanan) {
+            total += item.getHarga();
+        }
+        return total;
+    }
+
+    public void tampilkanStruk() {
+        for (MenuItem item : daftarPesanan) {
+            item.tampilMenu();
+        }
+        System.out.println("Total: " + hitungTotal());
+    }
+}
+
+
+public class ManajemenRestoran {
+    public static void main(String[] args) {
+        Menu menu = new Menu();
+        Pesanan pesanan = new Pesanan();
+        Scanner scanner = new Scanner(System.in);
+        int pilihan;
+
+        do {
+            System.out.println("Menu Utama:");
+            System.out.println("1. Tambah Item ke Menu");
+            System.out.println("2. Tampilkan Menu Restoran");
+            System.out.println("3. Terima Pesanan");
+            System.out.println("4. Hitung Total Biaya Pesanan");
+            System.out.println("5. Tampilkan Struk Pesanan");
+            System.out.println("6. Keluar");
+            System.out.print("Pilih opsi: ");
+            pilihan = scanner.nextInt();
+
+            switch (pilihan) {
+                case 1:
+                    System.out.print("Masukkan jenis item (1: Makanan, 2: Minuman, 3: Diskon): ");
+                    int jenis = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Masukkan nama: ");
+                    String nama = scanner.nextLine();
+                    System.out.print("Masukkan harga: ");
+                    double harga = scanner.nextDouble();
+                    scanner.nextLine(); 
+                    System.out.print("Masukkan kategori: ");
+                    String kategori = scanner.nextLine();
+
+                    if (jenis == 1) {
+                        System.out.print("Masukkan jenis makanan: ");
+                        String jenisMakanan = scanner.nextLine();
+                        menu.tambahItem(new Makanan(nama, harga, kategori, jenisMakanan));
+                    } else if (jenis == 2) {
+                        System.out.print("Masukkan jenis minuman: ");
+                        String jenisMinuman = scanner.nextLine();
+                        menu.tambahItem(new Minuman(nama, harga, kategori, jenisMinuman));
+                    } else if (jenis == 3) {
+                        System.out.print("Masukkan diskon (%): ");
+                        double diskon = scanner.nextDouble();
+                        menu.tambahItem(new Diskon(nama, harga, kategori, diskon));
+                    }
+                    break;
+                case 2:
+                    menu.tampilkanMenu();
+                    break;
+                case 3:
+                    System.out.print("Masukkan nama item yang dipesan: ");
+                    String namaPesanan = scanner.nextLine();
+                    for (MenuItem item : menu.daftarMenu) {
+                        if (item.getNama().equalsIgnoreCase(namaPesanan)) {
+                            pesanan.tambahPesanan(item);
+                            break;
+                        }
+                    }
+                    break;
+                case 4:
+                    System.out.println("Total Biaya: " + pesanan.hitungTotal());
+                    break;
+                case 5:
+                    pesanan.tampilkanStruk();
+                    break;
+                case 6:
+                    System.out.println("Keluar dari program.");
+                    break;
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
+        } while (pilihan != 6);
+
+        scanner.close();
+    }
+}
